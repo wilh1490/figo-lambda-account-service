@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: account
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: account
+  template:
+    metadata:
+      labels:
+        app: account
+    spec:
+      containers:
+        - name: account
+          image: 881490088456.dkr.ecr.us-east-1.amazonaws.com/account-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+          envFrom:
+            - secretRef:
+                name: app-secrets
+          resources:
+            requests:
+              cpu: "250m" # Minimum CPU request
+              memory: "512Mi" # Minimum memory request
+            limits:
+              cpu: "500m" # Maximum CPU limit
+              memory: "1Gi" # Maximum memory limit
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: account-service
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-internal: "true" #use Internal NLB
+spec:
+  selector:
+    app: account
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
+  type: LoadBalancer
+
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: account
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: account
+  minReplicas: 2
+  maxReplicas: 10 # Can scale up to 1000 pods
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 60 # Target 60% CPU usage
