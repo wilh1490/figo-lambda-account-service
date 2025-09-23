@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rag
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: rag
+  template:
+    metadata:
+      labels:
+        app: rag
+    spec:
+      containers:
+        - name: rag
+          image: 881490088456.dkr.ecr.us-east-1.amazonaws.com/rag-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+          envFrom:
+            - secretRef:
+                name: app-secrets
+          resources:
+            requests:
+              cpu: "250m" # Minimum CPU request
+              memory: "256Mi" # Minimum memory request
+            limits:
+              cpu: "500m" # Maximum CPU limit
+              memory: "512Mi" # Maximum memory limit
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rag-service
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-internal: "true" #use Internal NLB
+spec:
+  selector:
+    app: rag
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
+  type: LoadBalancer
+
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: rag
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: rag
+  minReplicas: 2
+  maxReplicas: 10 # Can scale up to 1000 pods
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 60 # Target 60% CPU usage

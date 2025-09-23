@@ -1,0 +1,29 @@
+{
+  "name": "helix",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "David Platten",
+  "license": "ISC",
+  "dependencies": {
+    "@aws-sdk/client-bedrock": "3.828.0",
+    "@aws-sdk/client-bedrock-agent": "^3.826.0",
+    "@aws-sdk/client-bedrock-agent-runtime": "^3.835.0",
+    "@aws-sdk/client-bedrock-runtime": "3.826.0",
+    "axios": "^1.7.7",
+    "canvas": "^2.11.2",
+    "express": "^4.18.2",
+    "helix-ts": "^1.0.6",
+    "node-fetch": "^3.3.2",
+    "ollama": "^0.5.18"
+  },
+  "type": "module",
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}

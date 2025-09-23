@@ -1,0 +1,19 @@
+# Dockerfile
+FROM public.ecr.aws/lambda/nodejs:18
+
+# Copy package.json and package-lock.json (or yarn.lock)
+#COPY shared/package*.json ./
+COPY account/package*.json ./
+
+# Install production dependencies
+RUN npm ci --only=production --ignore-scripts && \
+    npm cache clean --force
+
+# Copy the rest of the application
+# Copy shared code
+COPY shared ./shared
+
+# Copy the rest of the application
+COPY account/. .
+
+CMD ["index.handler"]

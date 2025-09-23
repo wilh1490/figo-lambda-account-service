@@ -1,0 +1,33 @@
+{"text":"Business Profile: Dunni Foods\nPhone: 2348148\nSubscription: N/A\nClosing hour: 21\nBusiness Staff: N/A","metadata":{"businessId":"67f81462a2097a0ce7d37535"}}
+{"text":"Business Profile: N/A\nPhone: 2347065\nSubscription: N/A\nClosing hour: 21\nBusiness Staff: N/A","metadata":{"businessId":"67f9725ba2097a0ce7d37541"}}
+{"text":"Business Profile: N/A\nPhone: 234911\nSubscription: N/A\nClosing hour: 21\nBusiness Staff: N/A","metadata":{"businessId":"68062491c373d1b65dee415c"}}
+{"text":"Business Profile: N/A\nPhone: 234805\nSubscription: N/A\nClosing hour: 21\nBusiness Staff: N/A","metadata":{"businessId":"6810f4a1bce7dce6e75b5377"}}
+{"text":"Business Profile: N/A\nPhone: 2349117\nSubscription: N/A\nClosing hour: 21\nBusiness Staff: N/A","metadata":{"businessId":"682875baca60421182f9adee"}}
+{"text":"Business Profile: N/A\nPhone: 234911\nSubscription: N/A\nClosing hour: 21\nBusiness Staff: N/A","metadata":{"businessId":"6830eab5ca60421182f9af36"}}
+
+
+PUT kb-index-6234
+{
+  "settings": {
+    "index.knn": true
+  },
+  "mappings": {
+    "properties": {
+      "embedding": {
+        "type": "knn_vector",
+        "dimension": 1024,
+        "method": {
+          "name": "hnsw",
+          "space_type": "cosinesimil"
+        }
+      },
+      "title": { "type": "text" },
+      "description": { "type": "text" },
+      "businessId": { "type": "keyword" }
+    }
+  }
+}
+
+•
+•
+•

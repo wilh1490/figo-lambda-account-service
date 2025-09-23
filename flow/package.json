@@ -1,0 +1,25 @@
+{
+  "name": "flow",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "David Platten",
+  "license": "ISC",
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.884.0",
+    "@aws-sdk/client-sqs": "^3.821.0",
+    "@aws-sdk/client-ssm": "^3.879.0",
+    "libphonenumber-js": "^1.12.10",
+    "redis": "^4.7.0",
+    "mongoose": "^8.7.0",
+    "node-fetch": "^3.3.2",
+    "axios": "^1.12.1",
+    "uuid": "^10.0.0",
+    "dayjs": "^1.11.10"
+  },
+  "type": "module"
+}

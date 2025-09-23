@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html class="no-js" lang="">
+  <head>
+    <meta charset="utf-8" />
+    <title>Figo Invoice</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <style>
+      <%= css %>
+    </style>
+  </head>
+  <body>
+    <div class="web-container">
+      <% if (business.logo) { %>
+      <div class="logo-container right">
+        <img class="circle-img" src="<%= business.logo %>" />
+      </div>
+      <% } %>
+
+      <table class="invoice-info-container">
+        <tr>
+          <td rowspan="2" class="client-name"><%= customer.name %></td>
+          <td><%= business.name %></td>
+        </tr>
+        <tr>
+          <td></td>
+        </tr>
+        <tr>
+          <td>Invoice Date: <strong> <%= date %></strong></td>
+          <td><%= business.mobile %></td>
+        </tr>
+        <tr>
+          <td>Invoice No: <strong><%= ref %></strong></td>
+          <td></td>
+        </tr>
+      </table>
+
+      <table class="line-items-container">
+        <thead>
+          <tr>
+            <th class="heading-quantity">Qty</th>
+            <th class="heading-description">Description</th>
+            <th class="heading-price">Price</th>
+            <th class="heading-subtotal">Subtotal</th>
+          </tr>
+        </thead>
+        <tbody id="line-items-body">
+          <% line_items.forEach(item => { %>
+          <tr>
+            <td class="bold"><%= item.quantity %></td>
+            <td><%= item.name %></td>
+            <td class="right">₦<%= item.price %></td>
+            <td class="bold">₦<%= item.subtotal %></td>
+          </tr>
+          <% }) %>
+        </tbody>
+      </table>
+
+      <table class="line-items-container has-bottom-border">
+        <thead>
+          <tr>
+            <th>Note</th>
+            <th>Invoice Due By</th>
+            <th>Total Fees</th>
+            <th>Total Due</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="pa">
+              <div><%= note %></div>
+            </td>
+            <td class=""><%= due_date %></td>
+            <td class="">₦<%= fees %></td>
+            <td class="total">₦<%= total %></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="footer">
+        <!-- <div class="footer-info">
+          <span>hello@useanvil.com</span> | <span>555 444 6666</span> |
+          <span>useanvil.com</span>
+        </div> -->
+        <div class="footer-thanks">
+          <span>Made with</span>
+          <img
+            src="https://figoassets.s3.us-east-1.amazonaws.com/blue-heart.png"
+            alt="heart"
+            style="height: 18px"
+          />
+          <span>by Figo</span>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

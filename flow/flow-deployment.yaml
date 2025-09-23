@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flow
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: flow
+  template:
+    metadata:
+      labels:
+        app: flow
+    spec:
+      containers:
+        - name: flow
+          image: 881490088456.dkr.ecr.us-east-1.amazonaws.com/flow-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+          volumeMounts:
+          - name: tls-certs
+            mountPath: /etc/ssl/certs
+            readOnly: true
+          envFrom:
+            - secretRef:
+                name: app-secrets
+          resources:
+            requests:
+              cpu: "500m" # Minimum CPU request
+              memory: "512Mi" # Minimum memory request
+            limits:
+              cpu: "1" # Maximum CPU limit
+              memory: "1Gi" # Maximum memory limit
+      volumes:
+        - name: tls-certs
+          secret: 
+            secretName: tls-secrets     
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: flow-service
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: "nlb" #use NLB
+    service.beta.kubernetes.io/aws-load-balancer-eip-allocations: "eipalloc-0c2205641b203566c,eipalloc-0eb83ba625b3adca2"
+spec:
+  selector:
+    app: flow
+  ports:
+    - protocol: TCP
+      port: 443
+      targetPort: 443
+      nodePort: 30444
+  type: LoadBalancer
+
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: flow
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: flow
+  minReplicas: 2
+  maxReplicas: 10 # Can scale up to 1000 pods
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 60 # Target 60% CPU usage

@@ -1,0 +1,23 @@
+{
+  "name": "account-webhook",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "David Platten",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "custom-id": "^1.2.0",
+    "dayjs": "^1.11.10",
+    "node-fetch": "^3.3.2",
+    "uuid": "^9.0.1",
+    "mongoose": "^8.7.0",
+    "axios": "^1.7.7"
+  },
+  "type": "module"
+}
