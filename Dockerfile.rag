@@ -5,8 +5,10 @@ COPY rag/package*.json ./
 #COPY shared/package*.json ./
 
 # Install production dependencies
-RUN npm ci --only=production --ignore-scripts && \
-    npm cache clean --force
+#RUN npm ci --only=production --ignore-scripts && \
+    #npm cache clean --force
+
+RUN mpm install    
 
 # Copy shared code
 COPY shared ./shared
