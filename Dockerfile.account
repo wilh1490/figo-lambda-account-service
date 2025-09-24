@@ -6,8 +6,10 @@ FROM public.ecr.aws/lambda/nodejs:18
 COPY account/package*.json ./
 
 # Install production dependencies
-RUN npm ci --only=production --ignore-scripts && \
-    npm cache clean --force
+#RUN npm ci --only=production --ignore-scripts && \
+    #npm cache clean --force
+
+RUN mpm install    
 
 # Copy the rest of the application
 # Copy shared code
