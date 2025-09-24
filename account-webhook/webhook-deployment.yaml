@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webhook
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webhook
+  template:
+    metadata:
+      labels:
+        app: webhook
+    spec:
+      containers:
+        - name: webhook
+          image: 881490088456.dkr.ecr.us-east-1.amazonaws.com/webhook-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+          volumeMounts:
+          - name: tls-certs
+            mountPath: /etc/ssl/certs
+            readOnly: true
+          envFrom:
+            - secretRef:
+                name: app-secrets
+          resources:
+            requests:
+              cpu: "250m" # Minimum CPU request
+              memory: "256Mi" # Minimum memory request
+            limits:
+              cpu: "500m" # Maximum CPU limit
+              memory: "512Mi" # Maximum memory limit
+      volumes:
+        - name: tls-certs
+          secret:
+            secretName: tls-secrets
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: webhook-service
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: "nlb" #use NLB
+    service.beta.kubernetes.io/aws-load-balancer-eip-allocations: "eipalloc-06d1c4f4f95cbd7e8,eipalloc-00638e95a8ce086a5"
+spec:
+  selector:
+    app: webhook
+  ports:
+    - protocol: TCP
+      port: 443
+      targetPort: 443
+      nodePort: 30443
+  type: LoadBalancer
+
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: webhook
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: webhook
+  minReplicas: 1
+  maxReplicas: 100 # Can scale up to 1000 pods
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 60 # Target 60% CPU usage

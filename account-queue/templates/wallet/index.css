@@ -1,0 +1,202 @@
+body {
+  font-size: 16px;
+  font-family: "Inter", sans-serif;
+}
+
+.balance {
+  background-color: #242424;
+  display: grid;
+  justify-items: center;
+  align-items: start;
+  width: 100vw;
+}
+
+.balance .div {
+  background-color: var(--base-100);
+  overflow: hidden;
+  width: 327px;
+  height: 138px;
+  position: relative;
+}
+
+.balance .frame {
+  flex-direction: column;
+  align-items: flex-start;
+  top: 16px;
+  left: 18px;
+  display: inline-flex;
+  justify-content: center;
+  position: absolute;
+}
+
+.balance .text-wrapper {
+  position: relative;
+  width: fit-content;
+  margin-top: -1px;
+
+  color: var(--base-0);
+
+  white-space: nowrap;
+}
+
+.balance .text-wrapper-2 {
+  position: relative;
+  width: fit-content;
+
+  color: var(--base-0);
+
+  white-space: nowrap;
+}
+
+.balance .div-wrapper {
+  align-items: center;
+  gap: 8px;
+  top: 107px;
+  left: 131px;
+  display: inline-flex;
+  justify-content: center;
+  position: absolute;
+}
+
+.balance .text-wrapper-3 {
+  position: relative;
+  width: fit-content;
+  margin-top: -1px;
+
+  color: var(--base-0);
+
+  white-space: nowrap;
+}
+
+.balance .ellipse {
+  position: absolute;
+  width: 91px;
+  height: 91px;
+  top: 110px;
+  left: -36px;
+  background-color: #43a574;
+  border-radius: 45.5px;
+}
+
+.balance .group {
+  position: absolute;
+  width: 82px;
+  height: 80px;
+  top: 0;
+  left: 245px;
+}
+/* Original CSS code should be injected here */
+
+.balance {
+  background-color: #242424;
+  display: grid;
+  justify-items: center;
+  align-items: start;
+  width: 100vw;
+}
+
+.balance-card {
+  background-color: var(--base-100);
+  overflow: hidden;
+  width: 327px;
+  height: 138px;
+  position: relative;
+  border-radius: 10px;
+}
+
+.balance-info {
+  flex-direction: column;
+  align-items: flex-start;
+  top: 16px;
+  left: 18px;
+  justify-content: center;
+  position: absolute;
+}
+
+.balance-label {
+  position: relative;
+  width: fit-content;
+  margin-top: -1px;
+  color: var(--base-0);
+  white-space: nowrap;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.balance-amount {
+  position: relative;
+  width: fit-content;
+  margin-top: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--base-0);
+  white-space: nowrap;
+}
+
+.account-info {
+  align-items: center;
+  gap: 8px;
+  top: 107px;
+  left: 100px;
+  display: inline-flex;
+  justify-content: center;
+  position: absolute;
+  font-size: 12px;
+}
+
+.account-type {
+  position: relative;
+  width: fit-content;
+  margin-top: -1px;
+  color: var(--base-0);
+  white-space: nowrap;
+}
+
+.decorative-circle {
+  position: absolute;
+  width: 91px;
+  height: 91px;
+  top: 110px;
+  left: -36px;
+  background-color: #43a574;
+  border-radius: 45.5px;
+}
+
+.decorative-graphic {
+  position: absolute;
+  width: 82px;
+  height: 80px;
+  top: 0;
+  left: 245px;
+}
+
+@import url("https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css");
+* {
+  -webkit-font-smoothing: antialiased;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0px;
+  height: 100%;
+}
+/* a blue color as a generic focus style */
+button:focus-visible {
+  outline: 2px solid #4a90e2 !important;
+  outline: -webkit-focus-ring-color auto 5px !important;
+}
+a {
+  text-decoration: none;
+}
+
+body {
+  font-family: system-ui, -apple-system,
+    /* Firefox supports this but not yet `system-ui` */ "Segoe UI", Roboto,
+    Helvetica, Arial, sans-serif, "Apple Color Emoji", "Inter", "Segoe UI Emoji";
+}
+
+:root {
+  --base-100: rgba(36, 36, 36, 1);
+  --base-0: rgba(255, 255, 255, 1);
+}

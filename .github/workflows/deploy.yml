@@ -1,0 +1,128 @@
+name: Auto Deploy to Lambda
+ 
+on:
+  push:
+    branches: 
+      - 'figo-*'
+ 
+env:
+  AWS_REGION: ${{ vars.AWS_REGION }}
+  AWS_ACCOUNT_ID: ${{ vars.AWS_ACCOUNT_ID }}
+  ECR_REPOSITORY: ${{ vars.ECR_REPOSITORY }}
+  LAMBDA_FUNCTION: ${{ vars.LAMBDA_FUNCTION }}
+  DEV_BRANCH: ${{ vars.DEV_BRANCH }}
+  DOCKERFILE: ${{ vars.DOCKERFILE }}
+ 
+jobs:
+  auto-deploy:
+    name: Auto Merge and Deploy
+    runs-on: ubuntu-latest
+ 
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        token: ${{ secrets.GITHUB_TOKEN }}
+ 
+    - name: Configure Git
+      run: |
+        git config user.name "GitHub Actions Bot"
+        git config user.email "actions@github.com"
+ 
+    - name: Auto merge dev to main
+      run: |
+        git checkout main
+        git pull origin main
+        git merge origin/${{ env.DEV_BRANCH }} --no-ff -m "Auto merge ${{ env.DEV_BRANCH }} to main"
+        git push origin main
+ 
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+ 
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v2
+ 
+    - name: Build, tag, and push image to Amazon ECR
+      id: build-image
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        IMAGE_TAG: ${{ github.sha }}
+      run: |
+        docker build -f ${{ env.DOCKERFILE }} -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+        docker build -f ${{ env.DOCKERFILE }} -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+        echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+ 
+    - name: Create IAM role if not exists
+      run: |
+        if ! aws iam get-role --role-name ${{ env.LAMBDA_FUNCTION }}-role 2>/dev/null; then
+          echo "Creating IAM role for Lambda function..."
+          cat > trust-policy.json << EOF
+        {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        }
+        EOF
+          aws iam create-role \
+            --role-name ${{ env.LAMBDA_FUNCTION }}-role \
+            --assume-role-policy-document file://trust-policy.json
+          aws iam attach-role-policy \
+            --role-name ${{ env.LAMBDA_FUNCTION }}-role \
+            --policy-arn arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+          sleep 10
+          echo "IAM role created successfully"
+        else
+          echo "IAM role already exists"
+        fi
+ 
+    - name: Create or Update Lambda function
+      env:
+        IMAGE_URI: ${{ steps.build-image.outputs.image }}
+      run: |
+        if ! aws lambda get-function --function-name ${{ env.LAMBDA_FUNCTION }} 2>/dev/null; then
+          echo "Creating new Lambda function..."
+          aws lambda create-function \
+            --function-name ${{ env.LAMBDA_FUNCTION }} \
+            --role arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/${{ env.LAMBDA_FUNCTION }}-role \
+            --code ImageUri=$IMAGE_URI \
+            --package-type Image \
+            --timeout 600 \
+            --memory-size 4096 \
+            --description "Auto-deployed Lambda function from GitHub Actions"
+          echo "Lambda function created successfully"
+        else
+          echo "Updating existing Lambda function..."
+          aws lambda update-function-code \
+            --function-name ${{ env.LAMBDA_FUNCTION }} \
+            --image-uri $IMAGE_URI
+          aws lambda wait function-updated \
+            --function-name ${{ env.LAMBDA_FUNCTION }}
+          aws lambda update-function-configuration \
+            --function-name ${{ env.LAMBDA_FUNCTION }} \
+            --timeout 600 \
+            --memory-size 4096
+          echo "Lambda function updated successfully"
+        fi
+ 
+    - name: Verify deployment
+      run: |
+        aws lambda get-function \
+          --function-name ${{ env.LAMBDA_FUNCTION }} \
+          --query '{ImageUri:Code.ImageUri,Timeout:Configuration.Timeout,Memory:Configuration.MemorySize,State:Configuration.State}' \
+          --output table
+        echo "Deployment completed successfully!"
