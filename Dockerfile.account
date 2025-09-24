@@ -11,9 +11,7 @@ COPY account/package*.json ./
 
 RUN npm install --only=production --ignore-scripts && \
     npm cache clean --force
-
   
-
 # Copy the rest of the application
 # Copy shared code
 COPY shared ./shared

@@ -102,7 +102,7 @@ jobs:
             --code ImageUri=$IMAGE_URI \
             --package-type Image \
             --timeout 600 \
-            --memory-size 4096 \
+            --memory-size 2048 \
             --description "Auto-deployed Lambda function from GitHub Actions"
           echo "Lambda function created successfully"
         else
@@ -115,7 +115,7 @@ jobs:
           aws lambda update-function-configuration \
             --function-name ${{ env.LAMBDA_FUNCTION }} \
             --timeout 600 \
-            --memory-size 4096
+            --memory-size 2048
           echo "Lambda function updated successfully"
         fi
  
