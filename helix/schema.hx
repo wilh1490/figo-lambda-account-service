@@ -4,26 +4,43 @@ N::User {
     mobile: String,
     name: String,
     email: String,
-    country: String,
-    joinedAt: I64
+    country: String
 }
 N::Business {
     businessId: String,
     name: String,
     mobile: String,
-    logo: String,
-    joinedAt: I64
+    logo: String
 }
 N::Product {
     businessId: String,
     productName: String,
-    category: String,
+    productOrService: String,
     costPrice: F64,
     salePrice: F64,
     productId: String,
     quantityAvailable: I64,
-    expiryDate: I64,
-    addedAt: I64
+    expiryDate: I64
+}
+N::Sale {
+    businessId: String,
+    saleId: String,
+    costPrice: F64,
+    salePrice: F64,   
+    totalAmount: F64,
+    totalDue: F64,
+    saleDate: I64,
+    fees: F64,
+    paymentMethod: String, // "Cash", "Card", "Transfer", "Mixed"
+    paymentStatus: String // "Partially_Paid", "Paid", "Refunded", "Unpaid"
+}
+N::History {
+    businessId: String,
+    entity: String, // "Product", "Sale", "Customer", "Supplier", "Invoice", "Expense", "User", "Business"
+    entityId: String, // ID of the entity
+    userId: String,
+    action: String, // "Created", "Updated", "Deleted"
+    timestamp: I64
 }
 N::Customer {
     businessId: String,
@@ -45,42 +62,12 @@ V::SupplierEmbedding { text: String }
 
 // User access to businesses
 E::Staff {
-    From: User,
-    To: Business,
-    Properties: {
-        role: String,           // "Owner", "Accountant", "Bookkeeper"
-        permissions: [String],  // ["read", "write", "admin"]
-        startDate: I64,
-        lastActive: String
-    }
-}
-E::MyCustomers {
     From: Business,
-    To: Customer,
+    To: User,
     Properties: {
         role: String,           // "Owner", "Accountant", "Bookkeeper"
         permissions: [String],  // ["read", "write", "admin"]
-        startDate: I64,
-        lastActive: String
-    }
-}
-E::MySuppliers {
-    From: Business,
-    To: Supplier,
-    Properties: {
-        role: String,           // "Owner", "Accountant", "Bookkeeper"
-        permissions: [String],  // ["read", "write", "admin"]
-        startDate: I64,
-        lastActive: String
-    }
-}
-E::MyProducts {
-    From: Business,
-    To: Product,
-    Properties: {
-        role: String,           // "Owner", "Accountant", "Bookkeeper"
-        permissions: [String],  // ["read", "write", "admin"]
-        startDate: I64,
+        joinedAt: I64,
         lastActive: String
     }
 }
@@ -95,12 +82,25 @@ E::PurchasedBy {
     }
 }
 
-E::SoldTo {
+E::SaleBy {
+    From: Sale,
+    To: User,
+    Properties: {
+      
+    }
+}
+E::SaleTo {
     From: Sale,
     To: Customer,
     Properties: {
-        sale_date: I64,
-        total_amount: F64
+   
+    }
+}
+E::SoldAt {
+    From: Sale,
+    To: Business,
+    Properties: {
+      
     }
 }
 
