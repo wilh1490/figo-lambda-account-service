@@ -9,7 +9,10 @@ COPY account/package*.json ./
 #RUN npm ci --only=production --ignore-scripts && \
     #npm cache clean --force
 
-RUN mpm install    
+RUN npm install --only=production --ignore-scripts && \
+    npm cache clean --force
+
+  
 
 # Copy the rest of the application
 # Copy shared code
