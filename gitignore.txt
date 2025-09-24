@@ -57,7 +57,7 @@ coverage/
 tmp/
 temp/
 
-## AWS credentials
+# AWS credentials
 creae-secret
 ll.json
 
